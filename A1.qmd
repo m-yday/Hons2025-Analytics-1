@@ -55,7 +55,9 @@ lm_full |>
   tidy() |>
   kable(digits=2, caption="Saturated linear model of the online shopping data") 
 ```
-We now regularise this model using elasticnet regression.
+This model has many, many variables, considering the categorical variables each appear with their number of levels - 1 coefficients in it. Firstly, this is too many variables to be useful for interpretability, and secondly, we can see from the estimated coefficients (in conjunction with their standard errors and p-values) that many of these variables are not significant predictors of Revenue in our model.
+We therefore wish to clean up our model such that is uses only significant predictors, so we now regularise this model using elasticnet. regression.
+
 ```{r}
 #| label: "Elastic net regularisation"
 
