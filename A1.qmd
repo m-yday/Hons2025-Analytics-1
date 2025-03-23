@@ -49,15 +49,15 @@ We want to fit a linear regression model to our data. We begin with a saturated 
 ```{r}
 #| label: "Saturated model"
 
-lm_full <- lm(Revenue ~ ., train_data, family=binomial)
-coef(lm_full) %>% # tidy() %>%
+lm_full <- glm(Revenue ~ ., train_data, family=binomial)
+lm_full %>% # tidy() %>%
   kable(digits=2, caption="Saturated linear model of the online shopping data") #Fix this...
 ```
 We now regularise this model using elasticnet regression.
 ```{r}
 #| label: "Elastic net regularisation"
 
-elasticnet <- cva.glmnet(Revenue ~., train_data, alpha = seq(0, 1, 0.1), nfolds=10, family=binomial)
+elasticnet <- cva.glmnet(Revenue ~., train_data, alpha = seq(0, 1, 0.1), nfolds=10, family=binomial) # Fix
 plot(elasticnet)
 
 # df1 <- as.data.frame(matrix(cbind(coef(elasticnet, alpha=0), coef(elasticnet, alpha=0.1), coef(elasticnet, alpha=0.2), coef(elasticnet, alpha=0.3), coef(elasticnet, alpha=0.4), coef(elasticnet, alpha=0.5), coef(elasticnet, alpha=0.6), coef(elasticnet, alpha=0.7), coef(elasticnet, alpha=0.8), coef(elasticnet, alpha=0.9), coef(elasticnet, alpha=1)), ncol=11))
