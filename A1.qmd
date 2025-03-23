@@ -20,6 +20,7 @@ library(tidyverse)
 library(futureverse)
 library(glmnet)
 library(glmnetUtils)
+library(broom)
 train_data <- read.csv("online_shopping_train.csv", header = TRUE)
 
 ```
@@ -49,22 +50,52 @@ We want to fit a linear regression model to our data. We begin with a saturated 
 ```{r}
 #| label: "Saturated model"
 
-lm_full <- glm(Revenue ~ ., train_data, family=binomial)
-lm_full %>% # tidy() %>%
-  kable(digits=2, caption="Saturated linear model of the online shopping data") #Fix this...
+lm_full <- glm(Revenue ~ ., data=train_data, family=binomial)
+lm_full |>
+  tidy() |>
+  kable(digits=2, caption="Saturated linear model of the online shopping data") 
 ```
 We now regularise this model using elasticnet regression.
 ```{r}
 #| label: "Elastic net regularisation"
 
-elasticnet <- cva.glmnet(Revenue ~., train_data, alpha = seq(0, 1, 0.1), nfolds=10, family=binomial) # Fix
-plot(elasticnet)
+elasticnet <- cva.glmnet(Revenue ~., train_data, family=binomial, alpha = seq(0, 1, 0.1), nfolds=10)
+
+{
+  par(mfrow=c(1,1), pty="m", cex=0.6)
+  plot(elasticnet)
+  legend_labels <- lapply(elasticnet$alpha, function(x) format(x, digits = 3))
+}
 
 # df1 <- as.data.frame(matrix(cbind(coef(elasticnet, alpha=0), coef(elasticnet, alpha=0.1), coef(elasticnet, alpha=0.2), coef(elasticnet, alpha=0.3), coef(elasticnet, alpha=0.4), coef(elasticnet, alpha=0.5), coef(elasticnet, alpha=0.6), coef(elasticnet, alpha=0.7), coef(elasticnet, alpha=0.8), coef(elasticnet, alpha=0.9), coef(elasticnet, alpha=1)), ncol=11))
 # colnames(df1) <- c(0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1)
+# rownames(df1) <- rownames(coef(elasticnet, alpha=1))
 
-kable(df1, digits=3)
+# kable(df1, digits=3)
 ```
+
+```{r}
+#| label: "Min CV for elasticnet"
+
+# extract cvm from each alpha tried in the elastic-net regression
+# then find where precisely it came from
+alpha_spot <- 11; cvmin = 1000; lambda_spot = -5;
+for (i in 1:length(elasticnet$modlist))
+{
+  temp <- elasticnet$modlist[[i]]$cvm
+  j <- min(temp)
+  if (j < cvmin)
+  {
+    cvmin = j
+    alpha_spot = i
+    lambda_spot = which(temp == j)
+  }
+}
+opt_alpha = elasticnet$alpha[alpha_spot]
+opt_lambda = elasticnet$modlist[[alpha_spot]]$lambda[lambda_spot]
+```
+
+The optimal values are: `alpha` = `r opt_alpha`, `lambda` = `r opt_lambda`. The resulting minimum cross-validation error is `cvmin` = `r cvmin`. We choose these values for alpha and lambda.
 
 We choose something here, and we motivate it. In fact, that's pretty important. Please don't forget! (Especially because leaving this paragraph in will be awkward...)
 
