@@ -1,18 +1,24 @@
 ---
-title: "Analytics Assignment 1"
+title: "Analytics"
+subtitle: "Assignment 1"
+authors:
+  - name: Victoria Dingle
+  - name: Shvet Maharaj
 format: html
+date: last-modified
+execute:
+  echo: false
+  warning: false
+  message: false
 ---
 
 ```{r}
 #| label: "Libraries and data"
-#| echo: false
-#| warning: true # change this later!
 #| output: false
-#| message: true # also change this later!
 
+library(tidyverse)
+library(futureverse)
 library(glmnet)
-library(ggplot2)
-library(tidyr)
 library(glmnetUtils)
 train_data <- read.csv("online_shopping_train.csv", header = TRUE)
 
@@ -27,9 +33,6 @@ We have a number of categorical variables which will need to be converted into f
 
 ```{r}
 #| label: "Categorical to factors"
-#| echo: false
-#| warning: true #change
-#| message: true #change
 #| output: hide
 
 train_data <- train_data |> 
