@@ -26,6 +26,8 @@ library(broom)
 library(knitr)
 library(kableExtra)
 library(GGally)
+library(caret)
+library(tree)
 
 train_data <- read.csv("online_shopping_train.csv", header = TRUE)
 
@@ -203,4 +205,50 @@ polym <- glm(Revenue ~  Administrative + Administrative_Duration + Informational
 polym |>
   tidy() |>
   kable(digits=2)
+```
+
+# KNN
+
+We want to use a subset of the features, in their categorical form. 
+
+# Classification tree
+
+Fit a full classification tree and see what happens.
+
+```{r}
+train_stand_class <- train_stand |>
+  mutate(Revenue = as.factor(Revenue))
+
+shopping_tree_gini <- tree(Revenue ~ ., data = train_stand_class, split = 'gini')
+plot(shopping_tree_gini)
+text(shopping_tree_gini, pretty = 0)
+
+# First, grow a slightly larger tree
+shopping_bigtree <- tree(Revenue ~ ., data = train_stand_class, control = tree.control(nobs = nrow(na.omit(train_stand_class)), mindev = 0.005))
+
+# Then prune it down
+set.seed(28)
+shopping_cv <- cv.tree(shopping_bigtree, FUN = prune.tree, K=10)
+
+# Make the CV plot
+plot(shopping_cv$size, shopping_cv$dev, type = 'o', pch = 16, col = 'navy', lwd = 2, xlab = 'Number of terminal nodes', ylab='CV error')
+
+shopping_cv$k[1] <- 0 #Don't want no -Inf
+alpha <- round(shopping_cv$k,1)
+axis(3, at = shopping_cv$size, lab = alpha, cex.axis = 0.8)
+mtext(expression(alpha), 3, line = 2.5, cex = 1.2)
+axis(side = 1, at = 1:max(shopping_cv$size))
+
+T <- shopping_cv$size[which.min(shopping_cv$dev)] #The minimum CV Error
+abline(v = T, lty = 2, lwd = 2, col = 'red')
+```
+
+Looking at this plot, we appear to need no more than 4 terminal nodes. We plot the pruned tree corresponding to 4 nodes, so that we do not lose any categorising power.
+
+```{r}
+#| label: "Prune the tree"
+
+shopping_pruned <- prune.tree(shopping_bigtree, best=4)
+plot(shopping_pruned)
+text(shopping_pruned, pretty = 0)
 ```
