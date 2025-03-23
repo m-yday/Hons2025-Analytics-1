@@ -64,16 +64,59 @@ lm_full |>
   tidy() |>
   kable(digits=2, caption="Saturated linear model of the online shopping data") 
 ```
-Considering the largest coefficients:
+Considering the coefficients of the greatest magnitude:
 
 In order of the largest effects:
 
-- BounceRates:
-
 - Months:
-With reference to January: 
-largest value: November +0.5
-smallest value: February -1.75
+With reference to August: 
+Greatest increase: November +0.49
+Greatest decrease: February -1.77
+
+- PageValues +1.46
+
+- VisitorType:
+With reference to New Visitor:
+Greatest decrease: Other -0.86
+
+
+Considering the p-values obtained from a test of significance of the coefficient estimates:
+
+Seemingly significant:
+- Exit Rates 0.00
+- Page Values 0.00
+- Months with reference to August:
+    December, March, May 0.00
+    November 0.01
+    February 0.03
+- Visitor Types with reference to New Visitor:
+    Returning Visitor 0.00
+- Weekend with reference to False:
+    True 0.06
+- Informational 0.08
+- Product Related Duration 0.08
+- Browser with reference to 1:
+    0.09
+
+Seemingly insignificant:
+- Months with reference to August:
+    September 0.96
+    October 0.62
+    July 0.45
+- Informational Duration 0.91
+- Special Day 0.91
+- Browser with reference to 1:
+    2 0.89
+    4 0.59
+    10 0.55
+    6 0.54
+    3 0.45
+- Operating Systems with reference to 1:
+    2 0.87
+- Administrative 0.69
+- Visitor Type with reference to New:
+    Other 0.44
+- Administrative Duration 0.40
 
 
 
@@ -123,11 +166,11 @@ The optimal values are: `alpha` = `r opt_alpha`, `lambda` = `r opt_lambda`. The 
 
 ```{r}
 # Make this one plot and put different colours in
-minlossplot(elasticnet, ylim=c(0.586, 0.606), main="CV Loss plot using minimum CV loss", cv.type="min")
-minlossplot(elasticnet, ylim=c(0.586, 0.606), main="CV Loss plot using CV loss within 1 standard error of the minimum", cv.type="1se")
+minlossplot(elasticnet, ylim=c(0.586, 0.608), main="CV Loss plot using minimum CV loss", cv.type="min")
+minlossplot(elasticnet, ylim=c(0.586, 0.608), main="CV Loss plot using CV loss within 1 standard error of the minimum", cv.type="1se")
 ```
 
-Our elasticnet regularisation has selected an alpha value of 1, which corresponds to pure Lasso Regression. This makes sense because our original model had many variables, with few of them appearing significant in the saturated model. There is a large difference in CV MSE for $\alpha = 0$ and $\alpha \neq 0$ in both CV Loss plots (although we typically use the "within 1 standard error" measure), which can be understood, because applying pure ridge regression will not eliminate any variables from the model, but rather shrink their coefficients nearly to 0, which does not address the issue we raised earlier of having too many seemingly insignificant predictor variables. 
+Our elasticnet regularisation has selected an alpha value of 0.5, which corresponds to pure Lasso Regression. This makes sense because our original model had many variables, with few of them appearing significant in the saturated model. There is a large difference in CV MSE for $\alpha = 0$ and $\alpha \neq 0$ in both CV Loss plots (although we typically use the "within 1 standard error" measure), which can be understood, because applying pure ridge regression will not eliminate any variables from the model, but rather shrink their coefficients nearly to 0, which does not address the issue we raised earlier of having too many seemingly insignificant predictor variables. 
 
 Thus we choose these values for alpha and lambda.
 
