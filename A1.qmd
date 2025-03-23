@@ -21,6 +21,9 @@ library(futureverse)
 library(glmnet)
 library(glmnetUtils)
 library(broom)
+library(knitr)
+library(kableExtra)
+
 train_data <- read.csv("online_shopping_train.csv", header = TRUE)
 
 ```
