@@ -68,7 +68,7 @@ We therefore wish to clean up our model such that is uses only significant predi
 ```{r}
 #| label: "Elastic net regularisation"
 
-elasticnet <- cva.glmnet(Revenue ~., train_data, family=binomial, alpha = seq(0, 1, 0.1), nfolds=10)
+elasticnet <- cva.glmnet(Revenue ~., train_stand, family=binomial, alpha = seq(0, 1, 0.1), nfolds=10)
 
 {
   par(mfrow=c(1,1), pty="m", cex=0.6)
