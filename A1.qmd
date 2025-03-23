@@ -170,14 +170,31 @@ minlossplot(elasticnet, ylim=c(0.586, 0.608), main="CV Loss plot using minimum C
 minlossplot(elasticnet, ylim=c(0.586, 0.608), main="CV Loss plot using CV loss within 1 standard error of the minimum", cv.type="1se")
 ```
 
-Our elasticnet regularisation has selected an alpha value of 0.5, which corresponds to pure Lasso Regression. This makes sense because our original model had many variables, with few of them appearing significant in the saturated model. There is a large difference in CV MSE for $\alpha = 0$ and $\alpha \neq 0$ in both CV Loss plots (although we typically use the "within 1 standard error" measure), which can be understood, because applying pure ridge regression will not eliminate any variables from the model, but rather shrink their coefficients nearly to 0, which does not address the issue we raised earlier of having too many seemingly insignificant predictor variables. 
+Our elasticnet regularisation has selected an alpha value of 0.6, which corresponds to pure Lasso Regression. This makes sense because our original model had many variables, with few of them appearing significant in the saturated model. There is a large difference in CV MSE for $\alpha = 0$ and $\alpha \neq 0$ in both CV Loss plots (although we typically use the "within 1 standard error" measure), which can be understood, because applying pure ridge regression will not eliminate any variables from the model, but rather shrink their coefficients nearly to 0, which does not address the issue we raised earlier of having too many seemingly insignificant predictor variables. 
 
 Thus we choose these values for alpha and lambda.
 
+We now show our chosen model's coefficients.
+```{r}
+#| label: "Chosen elastic net model"
+
+elastic_chosen <- glmnet(Revenue ~., data=train_stand, family=binomial, alpha=opt_alpha, lambda = opt_lambda)
+
+elastic_chosen |>
+  tidy() |>
+  select(term, estimate) |>
+  kable(digits=2)
+```
+
+We now discuss what we are left with, and how it compares to what we thought from the vanilla model. 
+
 We choose something here, and we motivate it. In fact, that's pretty important. Please don't forget! (Especially because leaving this paragraph in will be awkward...)
 
-Next, we use 
+
+# Non-linear decision boundary
+
+We change our logistic regression expression to fit a polynomial model rather than a linear model.
 
 ```{r}
-
+polym <- # 
 ```
