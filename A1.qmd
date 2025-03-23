@@ -53,8 +53,11 @@ We want to fit a linear regression model to our data. We begin with a saturated 
 
 ```{r}
 #| label: "Saturated model"
-
-lm_full <- glm(Revenue ~ ., data=train_data, family=binomial)
+# First we standardise, because our variables have different scales.
+train_x_stand <- train_data[, 1:10] |>
+  scale()
+train_stand <- data.frame(train_x_stand, train_data[,11:16])
+lm_full <- glm(Revenue ~ ., data=train_stand, family=binomial)
 lm_full |>
   tidy() |>
   kable(digits=2, caption="Saturated linear model of the online shopping data") 
