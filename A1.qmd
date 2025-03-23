@@ -23,6 +23,7 @@ library(glmnetUtils)
 library(broom)
 library(knitr)
 library(kableExtra)
+library(GGally)
 
 train_data <- read.csv("online_shopping_train.csv", header = TRUE)
 
@@ -115,3 +116,7 @@ Thus we choose these values for alpha and lambda.
 We choose something here, and we motivate it. In fact, that's pretty important. Please don't forget! (Especially because leaving this paragraph in will be awkward...)
 
 Next, we use 
+
+```{r}
+
+```
