@@ -96,7 +96,7 @@ Seemingly significant:
 - Informational 0.08
 - Product Related Duration 0.08
 - Browser with reference to 1:
-    0.09
+    5 0.09
 
 Seemingly insignificant:
 - Months with reference to August:
@@ -183,10 +183,11 @@ elastic_chosen <- glmnet(Revenue ~., data=train_stand, family=binomial, alpha=op
 elastic_chosen |>
   tidy() |>
   select(term, estimate) |>
-  kable(digits=2)
+  kable(digits=5)
 ```
 
 We now discuss what we are left with, and how it compares to what we thought from the vanilla model. 
+Make a table with them side by side with the original p-value maybe and both intercepts!
 
 We choose something here, and we motivate it. In fact, that's pretty important. Please don't forget! (Especially because leaving this paragraph in will be awkward...)
 
@@ -196,5 +197,10 @@ We choose something here, and we motivate it. In fact, that's pretty important. 
 We change our logistic regression expression to fit a polynomial model rather than a linear model.
 
 ```{r}
-polym <- # 
+# Choose ExitRates and PageValues to make polynomial
+polym <- glm(Revenue ~  Administrative + Administrative_Duration + Informational + Informational_Duration + ProductRelated + ProductRelated_Duration + BounceRates + ExitRates + I(ExitRates^2) + I(ExitRates^3) + PageValues + I(PageValues^2) + I(PageValues^3) + SpecialDay + Month + OperatingSystems + Browser + VisitorType + Weekend, data=train_stand, family=binomial)
+
+polym |>
+  tidy() |>
+  kable(digits=2)
 ```
