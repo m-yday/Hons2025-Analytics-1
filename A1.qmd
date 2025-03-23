@@ -252,3 +252,5 @@ shopping_pruned <- prune.tree(shopping_bigtree, best=4)
 plot(shopping_pruned)
 text(shopping_pruned, pretty = 0)
 ```
+
+The split on the left based on Month predicts the same class for both sides of the split. This is strange, so we investigate the deviance and homogeneity at each of these nodes to see what is happening.
