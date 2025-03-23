@@ -58,7 +58,9 @@ lm_full |>
   tidy() |>
   kable(digits=2, caption="Saturated linear model of the online shopping data") 
 ```
-We now regularise this model using elasticnet regression.
+This model has many, many variables, considering the categorical variables each appear with their number of levels - 1 coefficients in it. Firstly, this is too many variables to be useful for interpretability, and secondly, we can see from the estimated coefficients (in conjunction with their standard errors and p-values) that many of these variables are not significant predictors of Revenue in our model.
+We therefore wish to clean up our model such that is uses only significant predictors, so we now regularise this model using elasticnet. regression.
+
 ```{r}
 #| label: "Elastic net regularisation"
 
@@ -98,7 +100,16 @@ opt_alpha = elasticnet$alpha[alpha_spot]
 opt_lambda = elasticnet$modlist[[alpha_spot]]$lambda[lambda_spot]
 ```
 
-The optimal values are: `alpha` = `r opt_alpha`, `lambda` = `r opt_lambda`. The resulting minimum cross-validation error is `cvmin` = `r cvmin`. We choose these values for alpha and lambda.
+The optimal values are: `alpha` = `r opt_alpha`, `lambda` = `r opt_lambda`. The resulting minimum cross-validation error is `cvmin` = `r cvmin`. 
+
+```{r}
+minlossplot(elasticnet, cv.type="min")
+minlossplot(elasticnet, cv.type="1se")
+```
+
+Our elasticnet regularisation has selected an alpha value of 1, which corresponds to pure Lasso Regression. This makes sense because our original model had many variables, with few of them appearing significant in the saturated model. There is a large difference in CV MSE for $\alpha = 0$ and $\alpha \neq 0$, which can be understood, because applying pure ridge regression will not eliminate any variables from the model, but rather shrink their coefficients nearly to 0, which does not address the issue we raised earlier of having too many seemingly insignificant predictor variables. 
+
+Thus we choose these values for alpha and lambda.
 
 We choose something here, and we motivate it. In fact, that's pretty important. Please don't forget! (Especially because leaving this paragraph in will be awkward...)
 
