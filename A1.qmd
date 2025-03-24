@@ -18,7 +18,7 @@ execute:
 #| label: "Libraries and data"
 #| output: false
 
-pkg_vec <- c("tidyverse", "futureverse", "glmnet", "glmnetUtils", "broom", "knitr", "kableExtra", "GGally", "caret", "tree", "maptree")
+pkg_vec <- c("tidyverse", "futureverse", "glmnet", "glmnetUtils", "broom", "knitr", "kableExtra", "GGally", "caret", "tree", "randomForest")
 for (x in pkg_vec) {
   if (!requireNamespace(x, quietly = TRUE)) {
     install.packages(x, dependencies = TRUE)
@@ -208,9 +208,11 @@ polym |>
   kable(digits=2)
 ```
 
+
 # KNN
 
 We want to use a subset of the features, in their categorical form. 
+
 
 # Classification tree
 
@@ -271,3 +273,6 @@ text(shopping_pruned, pretty = 0)
 ```
 
 
+# Random Forest
+
+We first need to decide on a training and validation split, for our training data, or combine the training and validation data overall, otherwise we will not be able to see our training error.
