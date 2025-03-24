@@ -18,16 +18,13 @@ execute:
 #| label: "Libraries and data"
 #| output: false
 
-library(tidyverse)
-library(futureverse)
-library(glmnet)
-library(glmnetUtils)
-library(broom)
-library(knitr)
-library(kableExtra)
-library(GGally)
-library(caret)
-library(tree)
+pkg_vec <- c("tidyverse", "futureverse", "glmnet", "glmnetUtils", "broom", "knitr", "kableExtra", "GGally", "caret", "tree", "maptree")
+for (x in pkg_vec) {
+  if (!requireNamespace(x, quietly = TRUE)) {
+    install.packages(x, dependencies = TRUE)
+  }
+  library(x, character.only = TRUE)
+}
 
 train_data <- read.csv("online_shopping_train.csv", header = TRUE)
 
@@ -257,7 +254,7 @@ abline(v = T, lty = 2, lwd = 2, col = 'red')
 
 Looking at this plot, we have our biggest reduction in CV error after 1 split, and then much smaller reductions after that.
 
-A few of the splits predict the same class for both sides of the split. This is strange, so we investigate the deviance and homogeneity at each of these nodes to see what is happening. To decide on a tree size, we will also need the confusion matrix.
+A few of the splits predict the same class for both sides of the split. This is strange, as it seems to be a waste of a split, so we investigate the deviance and homogeneity at each of these nodes to see what is happening. To decide on a tree size, we will also need the confusion matrix.
 
 ```{r}
 #| label: "Confusion matrix"
@@ -268,8 +265,9 @@ A few of the splits predict the same class for both sides of the split. This is 
 ```{r}
 #| label: "Prune the tree"
 
-shopping_pruned <- prune.tree(shopping_bigtree, best=3)
+shopping_pruned <- prune.tree(shopping_bigtree, best=3) # Update this when we have decided
 plot(shopping_pruned)
 text(shopping_pruned, pretty = 0)
 ```
+
 
