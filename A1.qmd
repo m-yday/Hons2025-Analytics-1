@@ -216,15 +216,21 @@ We want to use a subset of the features, in their categorical form.
 Fit a full classification tree and see what happens.
 
 ```{r}
-train_stand_class <- train_stand |>
+train_class <- train_data |>
   mutate(Revenue = as.factor(Revenue))
+# Change target variable into a class, don't need to standardise for trees
 
-shopping_tree_gini <- tree(Revenue ~ ., data = train_stand_class, split = 'gini')
+# Gini is chaos - we should remove it
+shopping_tree_gini <- tree(Revenue ~ ., data = train_class, split = 'gini')
 plot(shopping_tree_gini)
 text(shopping_tree_gini, pretty = 0)
 
+shopping_tree <- tree(Revenue ~ ., data = train_class)
+plot(shopping_tree)
+text(shopping_tree, pretty = 0)
+
 # First, grow a slightly larger tree
-shopping_bigtree <- tree(Revenue ~ ., data = train_stand_class, control = tree.control(nobs = nrow(na.omit(train_stand_class)), mindev = 0.005))
+shopping_bigtree <- tree(Revenue ~ ., data = train_class, control = tree.control(nobs = nrow(na.omit(train_stand_class)), mindev = 0.005))
 
 # Then prune it down
 set.seed(28)
@@ -248,9 +254,13 @@ Looking at this plot, we appear to need no more than 4 terminal nodes. We plot t
 ```{r}
 #| label: "Prune the tree"
 
-shopping_pruned <- prune.tree(shopping_bigtree, best=4)
+shopping_pruned <- prune.tree(shopping_bigtree, best=3)
 plot(shopping_pruned)
 text(shopping_pruned, pretty = 0)
 ```
 
 The split on the left based on Month predicts the same class for both sides of the split. This is strange, so we investigate the deviance and homogeneity at each of these nodes to see what is happening.
+
+To decide on a tree size, we will also need the confusion matrix.
+
+
