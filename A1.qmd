@@ -167,6 +167,8 @@ opt_lambda = elasticnet$modlist[[alpha_spot]]$lambda[lambda_spot]
 The optimal values are: `alpha` = `r opt_alpha`, `lambda` = `r opt_lambda`. The resulting minimum cross-validation error is `cvmin` = `r cvmin`. 
 
 ```{r}
+#| label: "CV loss plots"
+
 # Make this one plot and put different colours in
 minlossplot(elasticnet, ylim=c(0.586, 0.608), main="CV Loss plot using minimum CV loss", cv.type="min")
 minlossplot(elasticnet, ylim=c(0.586, 0.608), main="CV Loss plot using CV loss within 1 standard error of the minimum", cv.type="1se")
@@ -199,6 +201,8 @@ We choose something here, and we motivate it. In fact, that's pretty important. 
 We change our logistic regression expression to fit a polynomial model rather than a linear model.
 
 ```{r}
+#| label: "Polynomial regression"
+
 # Choose ExitRates and PageValues to make polynomial
 polym <- glm(Revenue ~  Administrative + Administrative_Duration + Informational + Informational_Duration + ProductRelated + ProductRelated_Duration + BounceRates + ExitRates + I(ExitRates^2) + I(ExitRates^3) + PageValues + I(PageValues^2) + I(PageValues^3) + SpecialDay + Month + OperatingSystems + Browser + VisitorType + Weekend, data=train_stand, family=binomial)
 
@@ -216,6 +220,8 @@ We want to use a subset of the features, in their categorical form.
 Fit a full classification tree and see what happens.
 
 ```{r}
+#| label: "Classification tree"
+
 train_class <- train_data |>
   mutate(Revenue = as.factor(Revenue))
 # Change target variable into a class, don't need to standardise for trees
@@ -249,7 +255,15 @@ T <- shopping_cv$size[which.min(shopping_cv$dev)] #The minimum CV Error
 abline(v = T, lty = 2, lwd = 2, col = 'red')
 ```
 
-Looking at this plot, we appear to need no more than 4 terminal nodes. We plot the pruned tree corresponding to 4 nodes, so that we do not lose any categorising power.
+Looking at this plot, we have our biggest reduction in CV error after 1 split, and then much smaller reductions after that.
+
+A few of the splits predict the same class for both sides of the split. This is strange, so we investigate the deviance and homogeneity at each of these nodes to see what is happening. To decide on a tree size, we will also need the confusion matrix.
+
+```{r}
+#| label: "Confusion matrix"
+
+
+```
 
 ```{r}
 #| label: "Prune the tree"
@@ -258,9 +272,4 @@ shopping_pruned <- prune.tree(shopping_bigtree, best=3)
 plot(shopping_pruned)
 text(shopping_pruned, pretty = 0)
 ```
-
-The split on the left based on Month predicts the same class for both sides of the split. This is strange, so we investigate the deviance and homogeneity at each of these nodes to see what is happening.
-
-To decide on a tree size, we will also need the confusion matrix.
-
 
