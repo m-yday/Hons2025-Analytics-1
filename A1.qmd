@@ -32,6 +32,12 @@ train_data <- read.csv("online_shopping_train.csv", header = TRUE)
 
 # Introduction
 
+In any capitalistic economy, the goal of business is to maximise profit. This leads to the common question of how to do so - a problem that statisticians often try to solve by examining existing data and predicting future trends. 
+
+There are many ways to fit models to data in order to "learn" from past trends in some way, but because they all focus on slightly different things, they lead to different predictions and different accuracies, meaning that there is no one-size-fits-all solution to the question of maximising profit, as it is situation-dependent. 
+
+We aim to analyse some of the most common techniques and models for a dataset about online shopping. Given information about a user's browsing session, the aim is to predict whether or not a sale will be finalised on an online shopping website.
+
 # Categorical variables
 In our dataset we have some numerical variables and some categorical variables.
 Our numerical variables are `Administrative`, `Administrative duration`, `Informational`, `Informational duration`, `Product related`, `Product related duration`, `Bounce rates`, `Exit rates`, `Page values` and `Special day`.
