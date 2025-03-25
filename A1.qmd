@@ -118,7 +118,6 @@ Seemingly insignificant:
 - Administrative Duration 0.40
 
 
-
 This model has many, many variables, considering the categorical variables each appear with their number of levels - 1 coefficients in it. Firstly, this is too many variables to be useful for interpretability, and secondly, we can see from the estimated coefficients (in conjunction with their standard errors and p-values) that many of these variables are not significant predictors of Revenue in our model.
 We therefore wish to clean up our model such that is uses only significant predictors, so we now regularise this model using elasticnet. regression.
 
@@ -281,8 +280,6 @@ We first need to decide on a training and validation split, for our training dat
 #| label: "Random forest"
 
 # # Train/test split
-# titanic <- na.omit(titanic)
-# set.seed(1)
 # train <- sample(1:nrow(titanic), 0.7*nrow(titanic))
 # 
 # # Bagging
@@ -293,31 +290,12 @@ We first need to decide on a training and validation split, for our training dat
 # Random Forest with 1000 trees
 shopping_rf <- randomForest(Revenue ~ ., data = train_class, ntree = 1000)
 
-# # Quick single tree
-# stopcrit <- tree.control(nobs = length(train), mindev = 0.005)
-# titanic_tree_overfit <- tree(Survived ~ ., data = titanic, subset = train, control = stopcrit)
-# titanic_cv <- cv.tree(titanic_tree_overfit)
-# T <- titanic_cv$size[which.min(titanic_cv$dev)]
-# titanic_pruned <- prune.tree(titanic_tree_overfit, best = T)
-
-# # Predictions
+# Predictions
 # titanic_bag_pred  <- predict(titanic_bag, newdata = titanic[-train, ])
-# titanic_rf_pred   <- predict(titanic_rf, newdata = titanic[-train, ])
-# titanic_tree_pred <- predict(titanic_pruned, newdata = titanic[-train, ], type = 'class')
+# shopping_rf_pred   <- predict(shopping_rf, newdata = titanic[-train, ]) # What is newdata? Problem
 
 # # Prediction accuracy
-# y_titanic_test   <- titanic[-train, 1]
+# y_shopping_test   <- train_class[, 16] # But which set? Train_class or validation?
 # titanic_bag_mis  <- mean(y_titanic_test != titanic_bag_pred)
-# titanic_rf_mis   <- mean(y_titanic_test != titanic_rf_pred)
-# titanic_tree_mis <- mean(y_titanic_test != titanic_tree_pred)
-
-# # Plot errors
-# plot(titanic_rf$err.rate[, 'OOB'], xlab = 'Number of trees', ylab = 'Classification error',
-#      type = 's', col = 'darkgreen', ylim = c(0.1, titanic_tree_mis))
-# lines(titanic_bag$err.rate[, 'OOB'], col = 'blue', type = 's')
-# abline(h = titanic_bag_mis, col = 'blue', lty = 2, lwd = 2)
-# abline(h = titanic_rf_mis, col = 'darkgreen', lty = 2, lwd = 2)
-# abline(h = titanic_tree_mis, col = 'grey', lty = 2, lwd = 2)
-# legend('bottomright', legend = c('Bagging OOB', 'Bagging test', 'Random forest OOB', 'Random forest test', 'Single tree test'),
-#        col = c('blue', 'blue', 'darkgreen', 'darkgreen', 'grey'), lwd = 2, lty = c('solid', 'dashed', 'solid', 'dashed', 'dashed'))
+# shopping_rf_mis   <- mean(y_shopping_test != shopping_rf_pred)
 ```
