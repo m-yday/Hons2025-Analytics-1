@@ -216,7 +216,101 @@ polym |>
 
 # KNN
 
-We want to use a subset of the features, in their categorical form. 
+We want to use a subset of the features, (in their categorical form?)
+
+```{r}
+#| label: "KNN feature selection"
+
+def feature_selecter(input_x, y, candidate_features_dict:dict, candidate_features_id:list, best_features:list, best_accuracy=0, verbose=True):
+    if not candidate_features_id:
+        return best_accuracy, best_features
+    best_x = input_x   
+    best_feature= -1 
+    if best_accuracy == 0:
+        knn_model = KNeighborsClassifier().fit(input_x, y)
+        cv_results = cross_validate(knn_model, input_x, y, cv=5, scoring="accuracy")
+        best_accuracy = cv_results["test_score"].mean()
+
+    if verbose:
+       print(f"best accuracy(old) = {best_accuracy}")
+       #print(candidate_features_id) 
+ 
+    for feature in candidate_features_id:       
+            X = input_x.copy(deep=True)
+
+            # define your candidate feature here!
+            if feature == 0:
+                X[candidate_features_dict[feature]] = X["Insulin"]*X["Glucose"]
+
+            elif feature == 1:
+                X[candidate_features_dict[feature]] = X["Glucose"]/(X["Insulin"]+0.0001)
+
+            elif feature == 2:
+                X[candidate_features_dict[feature]] = X["Age"]*X["Pregnancies"]
+
+            elif feature == 3:
+                X[candidate_features_dict[feature]] = X["Age"]/(X["Pregnancies"]+0.0001)
+
+            elif feature == 4:
+                X[candidate_features_dict[feature]] = X["Age"]*X["Pregnancies"]*X["Glucose"]
+
+            elif feature == 5:
+                X[candidate_features_dict[feature]] = X["Glucose"]/(X["Age"]+0.0001)
+
+            elif feature == 6:
+                X[candidate_features_dict[feature]] = X["Insulin"]/(X["Age"]+0.0001)
+
+            elif feature == 7:
+                X[candidate_features_dict[feature]] = X["BMI"]*X["Pregnancies"]
+
+            elif feature == 8:
+                X[candidate_features_dict[feature]] = X["BMI"]*X["Age"]
+
+            elif feature == 9:
+                X[candidate_features_dict[feature]] =  X["BMI"]*(X["Age"])*X["Pregnancies"]
+
+            elif feature == 10:
+                X[candidate_features_dict[feature]] = X["BMI"]*(X["Glucose"])
+
+            elif feature == 11:
+                X[candidate_features_dict[feature]] = X["DiabetesPedigreeFunction"]*(X["Insulin"])
+
+            elif feature == 12:
+                X[candidate_features_dict[feature]] = X["SkinThickness"]*(X["Insulin"])
+
+            elif feature == 13:
+                X[candidate_features_dict[feature]] = X["Pregnancies"]/(X["Age"]+0.0001)
+            
+            elif feature == 14:
+                X[candidate_features_dict[feature]] = X["Glucose"]+X["Insulin"]+X["SkinThickness"]
+            
+            elif feature == 15:
+                X[candidate_features_dict[feature]] = X["BloodPressure"]/(X["Glucose"]+0.0001)
+
+            
+            knn_model = KNeighborsClassifier().fit(X, y)
+            cv_results = cross_validate(knn_model, X, y, cv=5, scoring="accuracy")
+        
+            accuracy = cv_results["test_score"].mean()
+            if accuracy > best_accuracy:
+                best_accuracy = accuracy
+                best_feature = feature
+                best_x = X
+
+    if best_feature == -1: 
+        return best_accuracy, best_features 
+    
+    best_features.append(best_feature)
+    candidate_features_id.remove(best_feature)
+
+    if verbose:
+       print(f"best accuracy(new) = {best_accuracy}")  
+       print(f"added feature  = {best_feature}", end = '\n\n')   
+       #print(best_features)
+    
+    return feature_selecter(best_x, y, candidate_features_dict, candidate_features_id, best_features, best_accuracy, verbose)
+dist_mat <- dist(train_data)
+```
 
 
 # Classification tree
@@ -240,7 +334,7 @@ plot(shopping_tree)
 text(shopping_tree, pretty = 0)
 
 # First, grow a slightly larger tree
-shopping_bigtree <- tree(Revenue ~ ., data = train_class, control = tree.control(nobs = nrow(na.omit(train_stand_class)), mindev = 0.005))
+shopping_bigtree <- tree(Revenue ~ ., data = train_class, control = tree.control(nobs = nrow(na.omit(train_class)), mindev = 0.005))
 
 # Then prune it down
 set.seed(28)
