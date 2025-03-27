@@ -238,7 +238,7 @@ feature_selecter <- function(input_x, y, candidate_features_dict, candidate_feat
 
     if (verbose)
     {
-       print(f"best accuracy(old) = {best_accuracy}")
+       print(paste0("best accuracy(old) = ", {best_accuracy}))
        #print(candidate_features_id) 
     }
  
@@ -301,11 +301,12 @@ feature_selecter <- function(input_x, y, candidate_features_dict, candidate_feat
             cv_results = cross_validate(knn_model, X, y, cv=5, scoring="accuracy")
         
             accuracy = cv_results["test_score"].mean()
-            if accuracy > best_accuracy:
+            if (accuracy > best_accuracy)
+{
                 best_accuracy = accuracy
                 best_feature = feature
                 best_x = X
-          }
+}         }
                 
 
     if (best_feature == -1) 
@@ -317,8 +318,8 @@ feature_selecter <- function(input_x, y, candidate_features_dict, candidate_feat
 
     if (verbose)
     {
-       print(f"best accuracy(new) = {best_accuracy}")  
-       print(f"added feature  = {best_feature}", end = '\n\n')   
+       print(paste0("best accuracy(new) = ", {best_accuracy}))  
+       print(paste0("added feature  = ", {best_feature}))   
        #print(best_features)
     }
     
