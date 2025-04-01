@@ -32,9 +32,9 @@ train_data <- read.csv("online_shopping_train.csv", header = TRUE)
 
 # Introduction
 
-In any capitalistic economy, the goal of business is to maximise profit. This leads to the common question of how to do so - a problem that statisticians often try to solve by examining existing data and predicting future trends. 
+In any capitalist economy, the goal of business is to maximise profit. This leads to the common question of how to do so - a problem that statisticians often try to solve by examining existing data and predicting future trends. 
 
-There are many ways to fit models to data in order to "learn" from past trends in some way, but because they all focus on slightly different things, they lead to different predictions and different accuracies, meaning that there is no one-size-fits-all solution to the question of maximising profit, as it is situation-dependent. 
+There are many ways to fit models to data in order to "learn" from past trends in some way, but because they all focus on slightly different things, they lead to different predictions and different predictive accuracies, meaning that there is no one-size-fits-all solution to the question of maximising profit, as it is situation-dependent. 
 
 We aim to analyse some of the most common techniques and models for a dataset about online shopping. Given information about a user's browsing session, the aim is to predict whether or not a sale will be finalised on an online shopping website.
 
@@ -221,7 +221,7 @@ We want to use a subset of the features, (in their categorical form?)
 ```{r}
 #| label: "KNN feature selection"
 
-feature_selecter <- function(input_x, y, candidate_features_dict, candidate_features_id, best_features, best_accuracy=0, verbose=True)
+feature_selecter <- function(input_x, y, candidate_features_dict, candidate_features_id, best_features, best_accuracy=0, verbose=TRUE)
 {
     if (!candidate_features_id)
     {
@@ -231,9 +231,9 @@ feature_selecter <- function(input_x, y, candidate_features_dict, candidate_feat
     best_feature= -1 
     if (best_accuracy == 0)
     {
-        knn_model = KNeighborsClassifier().fit(input_x, y)
+        knn_model = KNeighborsClassifier() |> fit(input_x, y)
         cv_results = cross_validate(knn_model, input_x, y, cv=5, scoring="accuracy")
-        best_accuracy = cv_results["test_score"].mean()
+        best_accuracy = cv_results["test_score"] |> mean()
     }
 
     if (verbose)
@@ -244,7 +244,7 @@ feature_selecter <- function(input_x, y, candidate_features_dict, candidate_feat
  
     for (feature in candidate_features_id)
     {
-            X = input_x.copy(deep=True)
+            X = input_x |> copy(deep=TRUE)
 
             # define your candidate feature here!
             if (feature == 0)
@@ -297,10 +297,10 @@ feature_selecter <- function(input_x, y, candidate_features_dict, candidate_feat
 }
 
             
-            knn_model = KNeighborsClassifier().fit(X, y)
+            knn_model = KNeighborsClassifier() |> fit(X, y)
             cv_results = cross_validate(knn_model, X, y, cv=5, scoring="accuracy")
         
-            accuracy = cv_results["test_score"].mean()
+            accuracy = cv_results["test_score"] |> mean()
             if (accuracy > best_accuracy)
 {
                 best_accuracy = accuracy
@@ -311,7 +311,7 @@ feature_selecter <- function(input_x, y, candidate_features_dict, candidate_feat
 
     if (best_feature == -1) 
     {
-        return best_accuracy, best_features 
+        return(best_accuracy, best_features)
     }
     best_features.append(best_feature)
     candidate_features_id.remove(best_feature)
@@ -385,6 +385,9 @@ A few of the splits predict the same class for both sides of the split. This is 
 shopping_pruned <- prune.tree(shopping_bigtree, best=3) # Update this when we have decided
 plot(shopping_pruned)
 text(shopping_pruned, pretty = 0)
+deviance(shopping_pruned)
+
+predict(shopping_pruned)
 ```
 
 
